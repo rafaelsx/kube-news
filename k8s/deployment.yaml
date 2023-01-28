@@ -1,0 +1,87 @@
+# DB Postgres
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbpostgre
+spec:
+  selector:
+    matchLabels:
+      app: dbpostgre
+  template:
+    metadata:
+      labels:
+        app: dbpostgre
+    spec:
+      containers:
+        - name: dbpostgre
+          image: postgres:15.0
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "kubenews"
+            - name: POSTGRES_USER
+              value: "kubenews"
+            - name: POSTGRES_PASSWORD
+              value: "Pg#123"
+
+---
+
+# Service Postgre
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbpostgre
+spec:
+  selector:
+    app: dbpostgre
+  ports:
+    - port: 5432
+  type: ClusterIP # Este é o valor padrão
+
+---
+
+# App Kube-news
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubenewsweb
+spec:
+  selector:
+    matchLabels:
+      app: kubenewsweb
+  template:
+    metadata:
+      labels:
+        app: kubenewsweb
+    spec:
+      containers:
+        - name: kubenewsweb
+          image: rafaelsx/kube-news:v1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_DATABASE
+              value: "kubenews"
+            - name: DB_USERNAME
+              value: "kubenews"
+            - name: DB_PASSWORD
+              value: "Pg#123"
+            - name: DB_HOST
+              value: "dbpostgre" # name app postgre
+
+---
+
+# Service App Kube-news
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubenewsweb
+spec:
+  selector:
+    app: kubenewsweb
+  ports:
+    - port: 8080
+      targetPort: 8080 # Redireciona para a porta 80
+      nodePort: 30000
+  type: NodePort # Este é o valor padrão
