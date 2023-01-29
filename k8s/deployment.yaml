@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
         - name: kubenewsweb
-          image: rafaelsx/kube-news:v1
+          image: rafaelsx/kube-news:{{TAG}}
           ports:
             - containerPort: 8080
           env:
