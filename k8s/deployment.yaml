@@ -82,7 +82,7 @@ spec:
   selector:
     app: kubenewsweb
   ports:
-    - port: 8080
-      targetPort: 8080 # Redireciona para a porta 80
+    - port: 80 # Redireciona para a porta 80
+      targetPort: 8080
       nodePort: 30000
   type: NodePort # Este é o valor padrão
